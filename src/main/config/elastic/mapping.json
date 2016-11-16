@@ -1,0 +1,53 @@
+// PUT _template/kg_indexes
+{
+   "template": "kg_*",
+   "settings": {
+      "number_of_shards": 1
+   },
+   "mappings": {
+      "resources": {
+         "_all": {
+            "enabled": false
+         },
+         "_source": {
+            "enabled": true
+         },
+         "properties": {
+            "namesGroup": {
+               "type": "string"
+            },
+            "labelsGroup": {
+               "type": "string"
+            }
+         },
+         "dynamic_templates": [
+            {
+               "groupLabels": {
+                  "match_mapping_type": "string",
+                  "match": "*label",
+                  "mapping": {
+                     "copy_to": "labelsGroup"
+                  }
+               }
+            },
+            {
+               "disableEnhanceDate": {
+                  "match_mapping_type": "date",
+                  "mapping": {
+                     "type": "string"
+                  }
+               }
+            },
+            {
+               "groupNames": {
+                  "match_mapping_type": "string",
+                  "match": "*:name",
+                  "mapping": {
+                     "copy_to": "namesGroup"
+                  }
+               }
+            }
+         ]
+      }
+   }
+}

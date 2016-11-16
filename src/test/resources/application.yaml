@@ -1,0 +1,44 @@
+spark:
+  master: local[*]
+  appName: KG Builder
+
+entities:
+  - endpoint: "http://blazegraph/bigdata/sparql"
+    prefixes:
+      wd: "http://www.wikidata.org/entity/"
+      wdt: "http://www.wikidata.org/prop/direct/"
+    queries:
+      - ?subject wdt:P31 wd:Q4830453 . ?subject ?predicate ?object
+      - ?root wdt:P31 wd:Q4830453 . ?root ?p_root ?subject . ?subject ?predicate ?object
+    partitionSize: 10000
+    countLimit: 50000
+
+
+enrichments:
+  - endpoint: "http://dbpedia.org/sparql"
+    prefixes:
+      owl: "http://www.w3.org/2002/07/owl#"
+      wd: "http://www.wikidata.org/entity/"
+      rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    queries:
+      - >
+        ?root rdf:type wd:Q43229
+        . ?root owl:sameAs ?subject
+        . ?root ?predicate ?object
+        . FILTER(regex(str(?subject),'^http://www.wikidata'))
+      - >
+        ?root1 rdf:type wd:Q43229
+        . ?root1 ?p_root ?root
+        . ?root owl:sameAs ?subject
+        . ?root ?predicate ?object
+        . FILTER(regex(str(?subject),'^http://www.wikidata'))
+    partitionSize: 5000
+    countLimit: 50000
+
+store:
+  elasticsearch.hadoop:
+    es.resource: kg_recognai/resources
+    es.mapping.id: id
+    es.batch.flush.manual: 5000
+  exclude.features:
+    - "http://dbpedia.org/property/establishedDate"
