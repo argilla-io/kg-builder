@@ -10,8 +10,8 @@ entities:
     queries:
       - ?subject wdt:P31 wd:Q4830453 . ?subject ?predicate ?object
       - ?root wdt:P31 wd:Q4830453 . ?root ?p_root ?subject . ?subject ?predicate ?object
-    partitionSize: 10000
-    countLimit: 50000
+    partitionSize: 20000
+    #countLimit: 50000
     exclude.predicate.patterns:
       - "wdt-statement"
       - "wdt-reference"
@@ -34,8 +34,8 @@ enrichments:
         . ?root owl:sameAs ?subject
         . ?root ?predicate ?object
         . FILTER(regex(str(?subject),'^http://www.wikidata'))
-    partitionSize: 5000
-    countLimit: 50000
+    partitionSize: 20000
+    #countLimit: 50000
 
 store:
   elasticsearch.hadoop:
