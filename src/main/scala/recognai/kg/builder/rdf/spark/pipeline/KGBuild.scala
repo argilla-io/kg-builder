@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.commons.lang3.StringUtils
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Dataset, SparkSession}
@@ -19,15 +20,19 @@ import scala.util.Try
 /**
   * Created by @frascuchon on 10/11/2016.
   */
-object KGBuild {
+object KGBuild extends LazyLogging {
+
 
   def apply(config: ApplicationConfig)(implicit session: SparkSession): Dataset[Subject] = {
 
     def readDataSources(datasourcesConfig: List[EntityConf])(implicit sc: SparkContext): RDD[Triple] = {
       val triplesInputs = for {
-        EntityConf(endpoint, prefixes, queries, partitionSize, countLimit) <- datasourcesConfig
+        EntityConf(endpoint, prefixes, queries, partitionSize, countLimit, excludedPredicates) <- datasourcesConfig
         query <- queries
       } yield SparqlRDFInputRDD(partitionSize, countLimit, endpoint, query, prefixes)
+        .filter {
+          case Triple(_, p, _) => !excludedPredicates.forall(_.exists(StringUtils.contains(p, _)))
+        }
 
       sc.union(triplesInputs) persist()
     }

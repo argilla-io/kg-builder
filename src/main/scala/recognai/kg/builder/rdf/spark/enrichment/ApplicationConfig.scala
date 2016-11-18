@@ -15,6 +15,7 @@ case class EntityConf(endpoint: String
                       , prefixes: Map[String, String]
                       , queries: List[String]
                       , partitionSize: Option[Int] = Some(1000)
-                      , countLimit: Option[Int] = None)
+                      , countLimit: Option[Int] = None
+                      , `exclude.predicate.patterns`: Option[List[String]] = None)
 
 case class SparkConfig(master: Option[String], appName: String)
