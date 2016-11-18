@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -n "$SPARK_OPTS" ]; then
+if [ -z "$SPARK_OPTS" ]; then
   SPARK_OPTS="--executor-memory 4G"
 fi
 
