@@ -3,14 +3,15 @@ spark:
   appName: KG Builder
 
 entities:
-  - endpoint: "http://10.132.0.8/bigdata/sparql"
+  - #endpoint: "http://10.132.0.8/bigdata/sparql"
+    endpoint: "https://query.wikidata.org/sparql"
     prefixes:
       wd: "http://www.wikidata.org/entity/"
       wdt: "http://www.wikidata.org/prop/direct/"
     queries:
       - ?subject wdt:P31 wd:Q4830453 . ?subject ?predicate ?object
       - ?root wdt:P31 wd:Q4830453 . ?root ?p_root ?subject . ?subject ?predicate ?object
-    partitionSize: 5000
+    partitionSize: 10000
     countLimit: 5000000
     exclude.predicate.patterns:
       - "wdt-statement"
