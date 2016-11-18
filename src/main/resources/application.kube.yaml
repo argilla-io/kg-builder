@@ -32,7 +32,7 @@ enrichments:
           . ?root owl:sameAs ?subject
           . ?root ?predicate ?object
           . FILTER(regex(str(?subject),'^http://www.wikidata'))
-        limit: 1250000
+        limit: 1700000
       - q:
           >
           ?root1 rdf:type wd:Q43229
@@ -40,7 +40,7 @@ enrichments:
           . ?root owl:sameAs ?subject
           . ?root ?predicate ?object
           . FILTER(regex(str(?subject),'^http://www.wikidata'))
-        limit: 12500000
+        limit: 5000000
     partitionSize: 10000
 
 store:
