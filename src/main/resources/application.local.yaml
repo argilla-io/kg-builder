@@ -12,7 +12,9 @@ entities:
       - ?root wdt:P31 wd:Q4830453 . ?root ?p_root ?subject . ?subject ?predicate ?object
     partitionSize: 10000
     countLimit: 50000
-
+    exclude.predicate.patterns:
+      - "wdt-statement"
+      - "wdt-reference"
 
 enrichments:
   - endpoint: "http://dbpedia.org/sparql"
@@ -37,7 +39,9 @@ enrichments:
 
 store:
   elasticsearch.hadoop:
+    es.nodes: localhost
     es.resource: kg_recognai/resources
+    es.nodes.client.only: true
     es.mapping.id: id
     es.batch.flush.manual: 5000
   exclude.features:

@@ -1,6 +1,6 @@
 package recognai.kg.builder.rdf.spark.pipeline
 
-import java.io.File
+import java.net.URL
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
@@ -70,7 +70,7 @@ object Main extends App with LazyLogging {
     case Some(configFile) =>
       runBuild(configFile)
     case None =>
-      logger.error("Missing config file command line argument. Please, provide configuration")
+      logger.error("Missing config url  command line argument. Please, provide URL configuration")
       sys.exit(1)
   }
 
@@ -78,7 +78,7 @@ object Main extends App with LazyLogging {
     val objectMapper = new ObjectMapper(new YAMLFactory())
     objectMapper.registerModule(DefaultScalaModule)
 
-    Try(objectMapper.readValue(new File(path), classOf[ApplicationConfig]))
+    Try(objectMapper.readValue(new URL(path), classOf[ApplicationConfig]))
       .map(config => {
 
         // Create spark session
