@@ -26,6 +26,7 @@
     <scala.compat.version>2.11</scala.compat.version>
 
     <spark.version>2.0.1</spark.version>
+    <spark-deps.scope>compile</spark-deps.scope>
 
     <elasticsearch-spark.version>5.0.0</elasticsearch-spark.version>
 
@@ -39,7 +40,18 @@
 
     <scala-loggin.version>3.5.0</scala-loggin.version>
     <logback-classic.version>1.1.7</logback-classic.version>
+
   </properties>
+
+  <profiles>
+    <profile>
+      <id>deploy</id>
+
+      <properties>
+        <spark-deps.scope>provided</spark-deps.scope>
+      </properties>
+    </profile>
+  </profiles>
 
   <dependencyManagement>
 
@@ -103,6 +115,7 @@
         <groupId>org.apache.spark</groupId>
         <artifactId>spark-sql_${scala.compat.version}</artifactId>
         <version>${spark.version}</version>
+        <scope>${spark-deps.scope}</scope>
       </dependency>
 
       <dependency>
@@ -239,7 +252,6 @@
       <groupId>org.scalatest</groupId>
       <artifactId>scalatest_${scala.compat.version}</artifactId>
     </dependency>
-
   </dependencies>
 
 
@@ -250,9 +262,12 @@
       <plugins>
 
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <version>2.4.1</version>
           <configuration>
+            <finalName>app</finalName>
+            <appendAssemblyId>false</appendAssemblyId>
             <descriptorRefs>
               <descriptorRef>jar-with-dependencies</descriptorRef>
             </descriptorRefs>
@@ -266,6 +281,41 @@
               </goals>
             </execution>
           </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>io.fabric8</groupId>
+          <artifactId>docker-maven-plugin</artifactId>
+          <version>0.18.1</version>
+          <extensions>true</extensions>
+          <executions>
+            <execution>
+              <id>build-image</id>
+              <phase>package</phase>
+              <goals>
+                <goal>build-nofork</goal>
+              </goals>
+              <configuration>
+                <images>
+                  <image>
+                    <name>recog/%a:%v</name>
+                    <build>
+                      <from>gettyimages/spark</from>
+                      <assembly>
+                        <mode>dir</mode>
+                        <targetDir>/</targetDir>
+                        <descriptor>docker-assembly.xml</descriptor>
+                      </assembly>
+                      <cmd>
+                        <shell>/run.sh</shell>
+                      </cmd>
+                    </build>
+                  </image>
+                </images>
+              </configuration>
+            </execution>
+          </executions>
+
         </plugin>
 
         <plugin>
@@ -317,7 +367,12 @@
         <artifactId>maven-surefire-plugin</artifactId>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
       </plugin>
     </plugins>
 
