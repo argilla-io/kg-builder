@@ -11,7 +11,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Dataset, SparkSession}
 import recognai.kg.builder.rdf.model._
-import recognai.kg.builder.rdf.spark.enrichment.{ApplicationConfig, EntityConf}
+import recognai.kg.builder.rdf.spark.enrichment.{ApplicationConfig, EntityConf, Query}
 import recognai.kg.builder.rdf.spark.rdd.SparqlRDFInputRDD
 import recognai.kg.builder.rdf.store.ESStore
 
@@ -27,9 +27,9 @@ object KGBuild extends LazyLogging {
 
     def readDataSources(datasourcesConfig: List[EntityConf])(implicit sc: SparkContext): RDD[Triple] = {
       val triplesInputs = for {
-        EntityConf(endpoint, prefixes, queries, partitionSize, countLimit, excludedPredicates) <- datasourcesConfig
-        query <- queries
-      } yield SparqlRDFInputRDD(partitionSize, countLimit, endpoint, query, prefixes)
+        EntityConf(endpoint, prefixes, queries, partitionSize, excludedPredicates) <- datasourcesConfig
+        Query(query, limit) <- queries
+      } yield SparqlRDFInputRDD(partitionSize, limit, endpoint, query, prefixes)
         .filter {
           case Triple(_, p, _) => !excludedPredicates.forall(_.exists(StringUtils.contains(p, _)))
         }

@@ -3,15 +3,16 @@ spark:
   appName: KG Builder
 
 entities:
-  - endpoint: "http://blazegraph/bigdata/sparql"
+  - endpoint: "https://query.wikidata.org/sparql"
     prefixes:
       wd: "http://www.wikidata.org/entity/"
       wdt: "http://www.wikidata.org/prop/direct/"
     queries:
-      - ?subject wdt:P31 wd:Q4830453 . ?subject ?predicate ?object
-      - ?root wdt:P31 wd:Q4830453 . ?root ?p_root ?subject . ?subject ?predicate ?object
+      - q: ?subject wdt:P31 wd:Q4830453 . ?subject ?predicate ?object
+        limit: 50000
+      - q: ?root wdt:P31 wd:Q4830453 . ?root ?p_root ?subject . ?subject ?predicate ?object
+        limit: 50000
     partitionSize: 10000
-    countLimit: 50000
     exclude.predicate.patterns:
       - "wdt-statement"
       - "wdt-reference"
@@ -23,25 +24,27 @@ enrichments:
       wd: "http://www.wikidata.org/entity/"
       rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     queries:
-      - >
-        ?root rdf:type wd:Q43229
-        . ?root owl:sameAs ?subject
-        . ?root ?predicate ?object
-        . FILTER(regex(str(?subject),'^http://www.wikidata'))
-      - >
-        ?root1 rdf:type wd:Q43229
-        . ?root1 ?p_root ?root
-        . ?root owl:sameAs ?subject
-        . ?root ?predicate ?object
-        . FILTER(regex(str(?subject),'^http://www.wikidata'))
+      - q:
+          >
+          ?root rdf:type wd:Q43229
+          . ?root owl:sameAs ?subject
+          . ?root ?predicate ?object
+          . FILTER(regex(str(?subject),'^http://www.wikidata'))
+        limit: 50000
+      - q:
+          >
+          ?root1 rdf:type wd:Q43229
+          . ?root1 ?p_root ?root
+          . ?root owl:sameAs ?subject
+          . ?root ?predicate ?object
+          . FILTER(regex(str(?subject),'^http://www.wikidata'))
+        limit: 50000
     partitionSize: 5000
-    countLimit: 50000
 
 store:
   elasticsearch.hadoop:
     es.nodes: localhost
     es.resource: kg_recognai/resources
-    es.nodes.client.only: true
     es.mapping.id: id
     es.batch.flush.manual: 5000
   exclude.features:
