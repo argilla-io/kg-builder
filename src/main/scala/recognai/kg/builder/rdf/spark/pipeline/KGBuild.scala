@@ -31,7 +31,9 @@ object KGBuild extends LazyLogging {
         Query(query, limit) <- queries
       } yield SparqlRDFInputRDD(partitionSize, limit, endpoint, query, prefixes)
         .filter {
-          case Triple(_, p, _) => !excludedPredicates.forall(_.exists(StringUtils.contains(p, _)))
+          case Triple(_, p, _) => excludedPredicates.forall(
+            !_.exists(pred => StringUtils.contains(p.toLowerCase, pred.toLowerCase))
+          )
         }
 
       sc.union(triplesInputs) persist()
@@ -55,6 +57,9 @@ object KGBuild extends LazyLogging {
 
     val triples = readDataSources(config.entities)
     val enrichments = readDataSources(config.enrichments)
+
+    logger.info(s"Triples: ${triples.count()}")
+    logger.info(s"Enrichments: ${enrichments.count()}")
 
     val enrichedTriples = sc.union(triples, enrichments) toDS()
 
