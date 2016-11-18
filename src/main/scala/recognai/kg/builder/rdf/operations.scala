@@ -78,7 +78,7 @@ package object operations {
         }
 
         foldNode(node)(
-          { case URI(uri) => Some(ObjectProperty(uri)) },
+          { case URI(uri) => Option(uri).map(ObjectProperty(_)) },
           { case BNode(id) => None },
           { case Literal(value, URI(dataType), lang) =>
             for {
