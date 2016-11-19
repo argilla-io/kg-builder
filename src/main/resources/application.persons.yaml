@@ -8,7 +8,7 @@ entities:
       wdt: "http://www.wikidata.org/prop/direct/"
     queries:
       - q: ?root wdt:P31 wd:Q4830453 . ?root ?p_root ?subject . ?subject ?predicate ?object
-        limit: 1000000
+        limit: 3000000
     partitionSize: 10000
 
     exclude.predicate.patterns:
