@@ -18,6 +18,10 @@
             },
             "labelsGroup": {
                "type": "string"
+            },
+            "type": {
+               "type": "string",
+               "index": "not_analyzed"
             }
          },
          "dynamic_templates": [
@@ -44,6 +48,16 @@
                   "match": "*:name",
                   "mapping": {
                      "copy_to": "namesGroup"
+                  }
+               }
+            },
+            {
+               "notAnalyzed": {
+                  "match_mapping_type": "string",
+                  "match": "features.*",
+                  "mapping": {
+                     "type":     "string",
+                     "index":    "not_analyzed"
                   }
                }
             }
