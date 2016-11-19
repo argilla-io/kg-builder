@@ -29,7 +29,7 @@ object ESStore {
       }
   }
 
-  private case class ESSubject(id: String, `type`: Option[String], features: Map[String, Seq[String]])
+  private case class ESSubject(id: String, `type`: String, features: Map[String, Seq[String]])
 
   def apply(subjects: Dataset[Subject], config: StoreConfig)(implicit sparkSession: SparkSession): Unit = {
 
@@ -62,7 +62,7 @@ object ESStore {
     subjects
       .map(s =>
         ESSubject(id = s.Subject
-          , `type` = s.getType
+          , `type` = s.getType.getOrElse("none")
           , features = cleanProperties(s.properties, excludedProperties)))
       .saveToEs(config.`elasticsearch.hadoop`)
   }
