@@ -49,6 +49,6 @@ store:
     es.nodes.client.only: true
     es.resource: kg_recognai/resources
     es.mapping.id: id
-    es.batch.flush.manual: 10000
+    #es.batch.flush.manual: 10000
   exclude.features:
     - "http://dbpedia.org/property/establishedDate"
