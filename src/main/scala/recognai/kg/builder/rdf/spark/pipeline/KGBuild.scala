@@ -22,7 +22,6 @@ import scala.util.Try
   */
 object KGBuild extends LazyLogging {
 
-
   def apply(config: ApplicationConfig)(implicit session: SparkSession): Dataset[Subject] = {
 
     def readDataSources(datasourcesConfig: List[EntityConf])(implicit sc: SparkContext): RDD[Triple] = {
@@ -56,7 +55,8 @@ object KGBuild extends LazyLogging {
     implicit val sc = session.sparkContext
 
     val triples = readDataSources(config.entities)
-    val enrichments = readDataSources(config.enrichments)
+    val enrichments = readDataSources(config.enrichments.getOrElse(List.empty))
+
 
     logger.info(s"Triples: ${triples.count()}")
     logger.info(s"Enrichments: ${enrichments.count()}")

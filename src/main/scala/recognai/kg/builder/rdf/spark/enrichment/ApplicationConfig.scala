@@ -6,7 +6,7 @@ package recognai.kg.builder.rdf.spark.enrichment
   */
 case class ApplicationConfig(spark: SparkConfig
                              , entities: List[EntityConf]
-                             , enrichments: List[EntityConf]
+                             , enrichments: Option[List[EntityConf]]
                              , store: StoreConfig)
 
 case class StoreConfig(`exclude.features`: List[String], `elasticsearch.hadoop`: Map[String, String])
