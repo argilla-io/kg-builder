@@ -1,5 +1,4 @@
 spark:
-  master: spark://146.148.5.105:7077
   appName: KG Builder
 
 entities:
